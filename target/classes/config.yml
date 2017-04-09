@@ -1,0 +1,43 @@
+# ClaimDonation is (C) Copyright Noah Hollowell and may be redistributed but NOT SOLD!
+# %player% and %command% are placeholders and can only be used in SUBCMD_INCORRECT and PLAYER_OFFLINE
+# If you translate the config into another language (all of this bit and below) please can you send me a copie so I can support other languages! 
+# Best to message me on Spigot or leave a comment on the plugins page saying that you have done this!
+#
+# About the 'players:' section
+# Players will always be empty apart from during a server restart! It will store any donations that have not been claimed before a restart and will save them here and then load them into the plugin and then clear this section!
+# Claimed item data will not be saved upon a crash! I am working on a way around this!
+#
+# PLACEHOLDERS CAN ONLY BE USED IN CERTAIN MESSAGES:
+# %player%: PLAYER_OFFLINE, PLAYER_COMMAND_LIST, PLAYER_COMMAND_LIST_HEADER, REMOVE_COMMAND_NONUMBER, COMMAND_REMOVED
+# %command%: SUBCMD_INCORRECT, PLAYER_COMMAND_LIST, COMMAND_REMOVED
+# %cmdnumber%: CAN ONLY BE USED IN: PLAYER_COMMAND_LIST
+#
+# UPDATE: 1.2.0 - REMOVE COMMAND ADDED, MESSAGES HAVE BEEN OPTIMISED TO BE LOADED AT THE START AND ON RELOADS AND NOT ACCESSED FROM THE FILE EVERY TIME!
+# NEW MESSAGES, NEW PLACEHOLDER! %cmdnumber% 
+
+
+prefix: "&7&l[&b&lClaimDONATION&7&l] "
+messages:
+  BASE_COMMAND: "&cPlease use: /claimdonation <claim/add/remove/list/reload>"
+  CLAIM_COMMAND: "&cPlease use: /claimdonation claim <player>"
+  LIST_COMMAND: "&cPlease use: /claimdonation list <player>"
+  REMOVE_COMMAND: "&cPlease use: /claimdonation remove <player> <number> Use /cd list <player> to view a players commands!"
+  ADD_COMMAND: "&cPlease use: /claimdonation add <player> <command>"
+  ADD_COMMAND_NO_COMMAND: "&cPlease specify a command! for the <command>!"
+  SUBCMD_INCORRECT: "&cUnrecognised command: %command%"
+  PLAYER_OFFLINE: "&cPlayer %player% &cis either offline or could not be found!"
+  PLAYER_NOITEM: "&cYou have no donation item(s) to claim!"
+  DONATION_ITEM_ADDED: "&bA donation item was succesfully added!"
+  NO_PERM: "&cYou are not allowed to use this command! Please ask a staff member about it for more info!"
+  CONFIG_RELOAD: "&bConfig reloaded!"
+  DONATION_CLAIM: "&bHere are your items and other things you bought! Thanks for donating!"
+  QUICK_ADD_COMMAND: "&cPlease use: /add <player> <command>"
+  PLAYER_COMMAND_LIST: "&7%cmdnumber%. &b%command%"
+  PLAYER_COMMAND_LIST_HEADER: "&6%player%'s &bcurrent commands:"
+  PLAYER_COMMAND_LIST_NOCMDS: "&6%player% &bhas no Donations/Commands set!"
+  REMOVE_COMMAND_NONUMBER: "&cPlease provide the number of the command to remove! You can list them by typing: &d/claimdonation list &6%player%"
+  NUMBERS_ONLY: "&cYou can only use numbers! Only numbers are accepted!"
+  COMMAND_REMOVED: "&bRemoved command: &6%command% &bfrom &6%player%&d!"
+
+
+players:

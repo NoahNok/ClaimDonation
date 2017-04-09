@@ -1,0 +1,57 @@
+name: ClaimDonation
+main: noahnok.claimdonation.files.main
+version: 1.2.2
+author: NoahNok
+commands:
+   claimdonation:
+      usage: /claimdonation <player>
+      permission: cd
+      permission-message: Sorry but you cannot use this command!
+      aliases: [claimd, cd, cdonation]
+   claim:
+      usage: /claim
+      permission: cd.claim
+   add:
+      usage: /apply <player> <command>
+      permission: cd.apply
+      
+permissions:
+    cd.*:
+        description: Gives access to all ClaimDonation commands
+        children:
+            cd.add: true
+            cd.claim: true
+            cd.reload: true
+            cd.list: true
+            cd.remove: true
+            cd.gui.remove: true
+            cd: true
+    cd.admin:
+        description: Commands for moderators/admins
+        children:
+            cd.list: true
+            cd.remove: true
+            cd.claim: true
+            cd.gui.remove: true
+            cd: true
+    cd.add:
+        description: Allows you to add
+        default: op
+    cd.claim:
+        description: Allows you to claim
+        default: op
+    cd.reload:
+        description: Allows you to reload the config
+        default: op
+    cd.list:
+        description: Allows you to list a players commands
+        default: op
+    cd.remove:
+        description: Allows you to remove a players command(s)
+        default: op
+    cd.gui.remove:
+        description: Allows removal of items from the GUI
+        default: op
+    cd:
+        description: Base Permission
+        default: true
