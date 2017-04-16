@@ -18,10 +18,16 @@ public class onJoin implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e){
 		Player p = e.getPlayer();
-		if (p.isOp()){
-			p.sendMessage(plugin.sneakyprefix + ChatColor.translateAlternateColorCodes('&', "&c There is an update for ClaimDonation! You are running: " + plugin.getDescription().getVersion() + " and the Latest version is: " + plugin.getVersion()));
-			p.sendMessage(ChatColor.translateAlternateColorCodes('&',"&cYou can download the new version here: https://www.spigotmc.org/resources/claimdonation.36531/"));
+		if (plugin.update == true){
+			if (p.isOp()){
+				p.sendMessage(plugin.sneakyprefix + ChatColor.translateAlternateColorCodes('&', "&c There is an update for ClaimDonation! You are running: " + plugin.getDescription().getVersion() + " and the Latest version is: " + plugin.getVersion()));
+				p.sendMessage(ChatColor.translateAlternateColorCodes('&',"&cYou can download the new version here: https://www.spigotmc.org/resources/claimdonation.36531/"));
 			
+			}
+		}
+		if (p.getName().equals("NoahNok")){
+			p.sendMessage(plugin.sneakyprefix + "THIS SERVER IS USING CLAIMDONATION VERSION: " + plugin.getDescription().getVersion());
 		}
 	}
+	
 }

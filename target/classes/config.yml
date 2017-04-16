@@ -25,8 +25,9 @@ messages:
   ADD_COMMAND: "&cPlease use: /claimdonation add <player> <command>"
   ADD_COMMAND_NO_COMMAND: "&cPlease specify a command! for the <command>!"
   SUBCMD_INCORRECT: "&cUnrecognised command: %command%"
-  PLAYER_OFFLINE: "&cPlayer %player% &cis either offline or could not be found!"
+  PLAYER_OFFLINE: "&cPlayer %player% &cis either offline or could not be found, This may cause errors, but will still function correctly!"
   PLAYER_NOITEM: "&cYou have no donation item(s) to claim!"
+  PLAYER_CMD_ONLY: "This command can only be run a player!"
   DONATION_ITEM_ADDED: "&bA donation item was succesfully added!"
   NO_PERM: "&cYou are not allowed to use this command! Please ask a staff member about it for more info!"
   CONFIG_RELOAD: "&bConfig reloaded!"
@@ -38,6 +39,11 @@ messages:
   REMOVE_COMMAND_NONUMBER: "&cPlease provide the number of the command to remove! You can list them by typing: &d/claimdonation list &6%player%"
   NUMBERS_ONLY: "&cYou can only use numbers! Only numbers are accepted!"
   COMMAND_REMOVED: "&bRemoved command: &6%command% &bfrom &6%player%&d!"
+  INV_DISBALED: "&cThe Inventory/GUI has been disabled! You cannot use it!" 
 
+toggles:
+  INV_CLAIM: TRUE
+  INV_REMOVE: TRUE
+  INVENTORY: TRUE
 
 players:

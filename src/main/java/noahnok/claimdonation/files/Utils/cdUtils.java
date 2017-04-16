@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import noahnok.claimdonation.files.main;
@@ -17,6 +18,10 @@ public class cdUtils {
 	}
 	public HashMap<UUID, ArrayList<String>> donation = new HashMap<UUID, ArrayList<String>>();
 	public ArrayList<String> getDonations(Player p){
+		UUID uuid = p.getUniqueId();
+		ArrayList<String> l = donation.get(uuid);
+		return l;
+	}	public ArrayList<String> getOfflineDonations(OfflinePlayer p){
 		UUID uuid = p.getUniqueId();
 		ArrayList<String> l = donation.get(uuid);
 		return l;
@@ -35,6 +40,21 @@ public class cdUtils {
 			donation.put(uuid, l);
 		}
 	}
+	public void setOfflineDonation(OfflinePlayer p, String ditem){
+		UUID uuid = p.getUniqueId();
+		String command = ditem.replace("%player%", p.getName());
+		if (donation.containsKey(uuid)){
+			ArrayList<String> l = donation.get(uuid);
+			l.add(command);
+			donation.put(uuid, l);	
+		}
+		else{
+			ArrayList<String> l = new ArrayList<String>();
+			l.add(command);
+			donation.put(uuid, l);
+		}
+	}
+	
 	public void giveDonation(Player p, ArrayList<String> commands){
 		for (String x : commands){
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), x);

@@ -28,12 +28,15 @@ public class cdCommands implements CommandExecutor {
 	@SuppressWarnings("deprecation")
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (args.length <= 0){
-			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") + "&7ClaimDonation Version 1.2.2 - Use /cd claim <name> to claim anything you buy on our store; in-game!"));
+			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") + "&7ClaimDonation Version 1.3.0 - Use /cd claim <name> to claim anything you buy on our store; in-game!"));
 			sender.sendMessage(Message("BASE_COMMAND"));
 			return true;
 			
 		}
+		//INVENTORY COMMAND
 		if (args[0].equalsIgnoreCase("inv")){
+			if (sender instanceof Player){
+			if (plugin.isToggleEnabled("INVENTORY") == true){
 			Player p = (Player) sender;
 			if (args.length == 1){
 				
@@ -48,8 +51,8 @@ public class cdCommands implements CommandExecutor {
 				plugin.CGUI.loadOtherPlayerGUI(target.getUniqueId(), p);
 				return true;
 			
-			
-			
+		}else{sender.sendMessage(Message("INV_DISBALED")); return true;}
+		}else{sender.sendMessage(Message("PLAYER_CMD_ONLY")); return true;}
 		}
 		//CLAIM COMMAND
 		if (args[0].equalsIgnoreCase("claim")){
@@ -83,6 +86,8 @@ public class cdCommands implements CommandExecutor {
 		
 		//ADD COMMAND
 		else if (args[0].equalsIgnoreCase("add")){
+			boolean online = true;
+			OfflinePlayer op;
 			if (sender.hasPermission("cd.add")){
 			if (args.length == 1){
 				sender.sendMessage(Message("ADD_COMMAND"));
@@ -91,9 +96,14 @@ public class cdCommands implements CommandExecutor {
 			Player target = checkOnline(args[1]);
 			if (target == null){
 				sender.sendMessage(Message("PLAYER_OFFLINE").replace("%player%", args[1]));
-				return true;
+				online = false;
+				op = Bukkit.getServer().getOfflinePlayer(args[1]);
+				
+				
+			}else{
+				op = null;
 			}
-			else{
+			
 				if (args.length == 2){
 					sender.sendMessage(Message("ADD_COMMAND_NO_COMMAND"));
 					return true;
@@ -102,34 +112,50 @@ public class cdCommands implements CommandExecutor {
 				for (int i = 2; i < args.length; i++) {
                     command += args[i] + " ";
                 }
-				plugin.Cdu.setDonation(target, command);
+				if (online == true){
+					plugin.Cdu.setDonation(target, command);
+				}else{
+					plugin.Cdu.setOfflineDonation(op, command);
+				}
 				if (sender instanceof Player){
 					sender.sendMessage(Message("DONATION_ITEM_ADDED"));
 				}
 				return true;
-			}
+			
 			}else{sender.sendMessage(Message("NO_PERM")); return true;}
 		}
 
 		//LIST COMMAND
 		else if(args[0].equalsIgnoreCase("list")){
 			if (sender.hasPermission("cd.list")){
+				boolean online = true;
+				OfflinePlayer op;
 				if (args.length == 1){
 					sender.sendMessage(Message("LIST_COMMAND"));
 					return true;
 				}
+				ArrayList<String> commands = null;
 				Player target = checkOnline(args[1]);
 				if (target == null){
 					sender.sendMessage(Message("PLAYER_OFFLINE").replace("%player%", args[1]));
-					return true;
+					op = Bukkit.getServer().getOfflinePlayer(args[1]);
+					online = false;
+				
+				}else{
+					op = null;
 				}
-				ArrayList<String> commands = plugin.Cdu.getDonations(target);
+				if (online == true){
+					commands = plugin.Cdu.getDonations(target);
+				}else{
+					commands = plugin.Cdu.getOfflineDonations(op);
+				}
+					
 				if (commands.size() == 0){
-					sender.sendMessage(Message("PLAYER_COMMAND_LIST_NOCMDS").replace("%player%", target.getName()));
+					sender.sendMessage(Message("PLAYER_COMMAND_LIST_NOCMDS").replace("%player%", args[1]));
 					return true;
 				}
 				int count = 0;
-				sender.sendMessage(Message("PLAYER_COMMAND_LIST_HEADER").replace("%player%", target.getName()));
+				sender.sendMessage(Message("PLAYER_COMMAND_LIST_HEADER").replace("%player%", args[1]));
 				for (String command : commands){
 					count += 1;
 					
@@ -142,6 +168,8 @@ public class cdCommands implements CommandExecutor {
 		//REMOVE COMMAND
 		else if(args[0].equalsIgnoreCase("remove")){
 			if (sender.hasPermission("cd.remove")){
+				boolean online = true;
+				OfflinePlayer op;
 				if (args.length == 1){
 					sender.sendMessage(Message("REMOVE_COMMAND"));
 					return true;
@@ -149,10 +177,13 @@ public class cdCommands implements CommandExecutor {
 				Player target = checkOnline(args[1]);
 				if (target == null){
 					sender.sendMessage(Message("PLAYER_OFFLINE").replace("%player%", args[1]));
-					return true;
+					online = false;
+				op = Bukkit.getServer().getOfflinePlayer(args[1]);
+				}else{
+					op = null;
 				}
 				if (args.length == 2){
-					sender.sendMessage(Message("REMOVE_COMMAND_NONUMBER").replace("%player%", target.getName()));
+					sender.sendMessage(Message("REMOVE_COMMAND_NONUMBER").replace("%player%", args[1]));
 					return true;
 				}
 				int number;
@@ -161,14 +192,19 @@ public class cdCommands implements CommandExecutor {
 			    } catch (NumberFormatException e) {
 			        sender.sendMessage(Message("NUMBERS_ONLY")); return true;
 			    }
-				ArrayList<String> commands = plugin.Cdu.getDonations(target);
+			    ArrayList<String> commands = null;
+			    if (online == true){
+			    	commands = plugin.Cdu.getDonations(target);
+			    }else{
+			    	commands = plugin.Cdu.getOfflineDonations(op);
+			    }
 				if (commands.size() == 0){
-					sender.sendMessage(Message("PLAYER_COMMAND_LIST_NOCMDS").replace("%player%", target.getName()));
+					sender.sendMessage(Message("PLAYER_COMMAND_LIST_NOCMDS").replace("%player%", args[1]));
 					return true;
 				}
 				String command = commands.get(number);
 				commands.remove(number);
-				sender.sendMessage(Message("COMMAND_REMOVED").replace("%command%", command).replace("%player%", target.getName()));
+				sender.sendMessage(Message("COMMAND_REMOVED").replace("%command%", command).replace("%player%", args[1]));
 				return true;
 				
 				
@@ -179,6 +215,7 @@ public class cdCommands implements CommandExecutor {
 			if (sender.hasPermission("cd.reload")){
 				plugin.reloadConfig();
 				plugin.CU.loadMessages();
+				plugin.loadToggles();
 				sender.sendMessage(Message("CONFIG_RELOAD"));
 				return true;
 			}else{sender.sendMessage(Message("NO_PERM")); return true;}

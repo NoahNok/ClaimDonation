@@ -40,8 +40,14 @@ public class cdGUI {
 		}
 	}
 	public void loadOtherPlayerGUI(UUID target, Player sender){
-		Player p = Bukkit.getServer().getPlayer(target);
-		Inventory pInv = Bukkit.createInventory(null, 27, ChatColor.AQUA + "Donation Claim - " + ChatColor.translateAlternateColorCodes('&', "&f&l" + p.getName()));
+		Player p = Bukkit.getPlayer(target);
+		String pname = "";
+		if (p == null){
+			pname = Bukkit.getOfflinePlayer(target).getName();
+		}else{
+			pname = p.getName();
+		}
+		Inventory pInv = Bukkit.createInventory(null, 27, ChatColor.AQUA + "Donation Claim - " + ChatColor.translateAlternateColorCodes('&', "&f&l" + pname));
 		
 		if (!plugin.Cdu.donation.containsKey(target)){
 			

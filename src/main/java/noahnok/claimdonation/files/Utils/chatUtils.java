@@ -19,20 +19,20 @@ public class chatUtils {
 		int count = 0;
 		for (String key : pl.getConfig().getConfigurationSection("messages").getKeys(false)){
 		if (getConfigMsg(key).equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', pl.getConfig().getString("prefix"))) || getConfigMsg(key) == null ||  getConfigMsg(key) == ""){
-			Bukkit.getServer().getLogger().warning("[ClaimDonation] ERROR ON MESSAGE: "+key+ " - Message has no content!");
+			Bukkit.getServer().getLogger().warning("[ClaimDonation] ERROR ON MESSAGE: "+key+ " - Message has no content or is Broken!");
 		}else{
 			messages.put(key, getConfigMsg(key));
 			count += 1;
 			}
 		}
-		Bukkit.getServer().getLogger().info("[ClaimDonation] Loading Messages... COMPLETE - ["+count+"/20]");
+		Bukkit.getServer().getLogger().info("[ClaimDonation] Loaded Messages... COMPLETE - ["+count+"/22]");
 	}
 	public String getMessage(String msg){
 		if (messages.containsKey(msg)){
 			String message = messages.get(msg);
 			return message;
 		}else{
-			return (ChatColor.RED + "ERROR NO MESSAGE FOUND!");
+			return (ChatColor.RED + "ERROR!! -  NO MESSAGE FOUND OR MESSAGES WERE IMPROPERLY LOADED! (TRY RELOADING THE PLUGIN!)");
 		}
 	}
 		
