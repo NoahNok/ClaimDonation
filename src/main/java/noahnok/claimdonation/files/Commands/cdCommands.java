@@ -28,7 +28,7 @@ public class cdCommands implements CommandExecutor {
 	@SuppressWarnings("deprecation")
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (args.length <= 0){
-			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") + "&7ClaimDonation Version 1.3.0 - Use /cd claim <name> to claim anything you buy on our store; in-game!"));
+			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("prefix") + "&7ClaimDonation Version "+ plugin.getDescription().getVersion() +" - Use /cd claim <name> (or /claim) to claim anything you buy on our store; in-game!"));
 			sender.sendMessage(Message("BASE_COMMAND"));
 			return true;
 			
@@ -54,6 +54,16 @@ public class cdCommands implements CommandExecutor {
 		}else{sender.sendMessage(Message("INV_DISBALED")); return true;}
 		}else{sender.sendMessage(Message("PLAYER_CMD_ONLY")); return true;}
 		}
+		//SAVE COMMAND
+		if (args[0].equalsIgnoreCase("save")){
+			if (sender.hasPermission("cd.save")){
+				if (args.length == 1){
+					plugin.Cdu.saveDonation();
+					sender.sendMessage(Message("SAVE_COMMAND"));
+					return true;
+				}
+			}else{sender.sendMessage(Message("NO_PERM")); return true;}
+		}
 		//CLAIM COMMAND
 		if (args[0].equalsIgnoreCase("claim")){
 			if (sender.hasPermission("cd.claim")){
@@ -67,7 +77,7 @@ public class cdCommands implements CommandExecutor {
 				return true;
 			}
 			else{
-				if (plugin.Cdu.getDonations(target) == null){
+				if (plugin.Cdu.getDonations(target) == null || plugin.Cdu.getDonations(target).isEmpty()){
 					if (sender instanceof Player){
 						target.sendMessage(Message("PLAYER_NOITEM"));
 						return true;
@@ -76,11 +86,14 @@ public class cdCommands implements CommandExecutor {
 						sender.sendMessage("Player: " + args[1] + "does not have any donation items to claim!");
 						return true;
 					}
+				}else{
+					plugin.Cdu.giveDonation(target, plugin.Cdu.getDonations(target));
+					target.sendMessage(Message("DONATION_CLAIM"));
+					return true;
 				}
-				plugin.Cdu.giveDonation(target, plugin.Cdu.getDonations(target));
-				sender.sendMessage(Message("DONATION_CLAIM"));
-				return true;
+
 			}
+
 			}else{sender.sendMessage(Message("NO_PERM")); return true;}
 		}
 		
@@ -125,8 +138,35 @@ public class cdCommands implements CommandExecutor {
 			}else{sender.sendMessage(Message("NO_PERM")); return true;}
 		}
 
+
+		//ADD ALL
+		else if (args[0].equalsIgnoreCase("addall")){
+			if (sender.hasPermission("cd.adddall")){
+				if (args.length == 1){
+					sender.sendMessage(Message("ADDALL_COMMAND"));
+					return true;
+				}
+				String command = "";
+				for (int i = 1; i < args.length; i++) {
+					command += args[i] + " ";
+				}
+				for (Player p : plugin.getServer().getOnlinePlayers()){
+					plugin.Cdu.setDonation(p, command);
+					if (plugin.isToggleEnabled("ADDALL_MESSAGE")){
+						p.sendMessage(Message("ADDALL_CONFIRMATION").replace("%player%", sender.getName()));
+					}
+					if (sender instanceof Player) {
+                        sender.sendMessage(Message("DONATION_ITEM_ADDED"));
+                    }
+                    return true;
+				}
+			}else{sender.sendMessage(Message("NO_PERM")); return true;}
+			return true;
+		}
+
+
 		//LIST COMMAND
-		else if(args[0].equalsIgnoreCase("list")){
+		else if (args[0].equalsIgnoreCase("list")){
 			if (sender.hasPermission("cd.list")){
 				boolean online = true;
 				OfflinePlayer op;
@@ -140,7 +180,7 @@ public class cdCommands implements CommandExecutor {
 					sender.sendMessage(Message("PLAYER_OFFLINE").replace("%player%", args[1]));
 					op = Bukkit.getServer().getOfflinePlayer(args[1]);
 					online = false;
-				
+
 				}else{
 					op = null;
 				}
@@ -149,8 +189,8 @@ public class cdCommands implements CommandExecutor {
 				}else{
 					commands = plugin.Cdu.getOfflineDonations(op);
 				}
-					
-				if (commands.size() == 0){
+
+				if (commands.size() == 0 || commands.isEmpty()){
 					sender.sendMessage(Message("PLAYER_COMMAND_LIST_NOCMDS").replace("%player%", args[1]));
 					return true;
 				}
@@ -158,9 +198,9 @@ public class cdCommands implements CommandExecutor {
 				sender.sendMessage(Message("PLAYER_COMMAND_LIST_HEADER").replace("%player%", args[1]));
 				for (String command : commands){
 					count += 1;
-					
+
 					sender.sendMessage(Message("PLAYER_COMMAND_LIST").replace("%cmdnumber%", count + "").replace("%command%", command));
-					
+
 				}
 				return true;
 			}else{sender.sendMessage(Message("NO_PERM")); return true;}
@@ -216,6 +256,9 @@ public class cdCommands implements CommandExecutor {
 				plugin.reloadConfig();
 				plugin.CU.loadMessages();
 				plugin.loadToggles();
+				plugin.reloadDataConfig();
+				plugin.reloadItemsConfig();
+				plugin.Cdu.loadColors();
 				sender.sendMessage(Message("CONFIG_RELOAD"));
 				return true;
 			}else{sender.sendMessage(Message("NO_PERM")); return true;}

@@ -1,6 +1,7 @@
 package noahnok.claimdonation.files;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -19,11 +20,11 @@ public class cdGUI {
 		this.plugin = plugin; 
 	}
 	
-	
+	public HashMap<Integer, String> colors = new HashMap<Integer, String>();
 	
 	public void loadPlayerGUI(UUID uuid){
 		Player p = Bukkit.getServer().getPlayer(uuid);
-		Inventory pInv = Bukkit.createInventory(null, 27, ChatColor.AQUA + "Donation Claim - " + ChatColor.translateAlternateColorCodes('&', "&f&l" + p.getName()));
+		Inventory pInv = Bukkit.createInventory(null, 27, ChatColor.translateAlternateColorCodes('&', colors.get(1) + "Donation " + colors.get(2) + "Claim " + colors.get(3) + "- " +  colors.get(4) + p.getName()));
 		
 		if (!plugin.Cdu.donation.containsKey(uuid)){
 			
@@ -33,8 +34,10 @@ public class cdGUI {
 		if (plugin.Cdu.donation.get(uuid).isEmpty()){
 			p.openInventory(pInv);
 		}else{
+			int slot = 0;
 			for (String cmd : plugin.Cdu.donation.get(uuid)){
-			pInv.addItem(createItemStack(cmd));
+			pInv.setItem(slot, createItemStack(cmd));
+			slot ++;
 		}
 		p.openInventory(pInv);
 		}
@@ -57,8 +60,10 @@ public class cdGUI {
 		if (plugin.Cdu.donation.get(target).isEmpty()){
 			sender.openInventory(pInv);
 		}else{
+            int slot = 0;
 			for (String cmd : plugin.Cdu.donation.get(target)){
-			pInv.addItem(createItemStack(cmd));
+                pInv.setItem(slot, createItemStack(cmd));
+                slot ++;
 		}
 		sender.openInventory(pInv);
 		}
@@ -66,7 +71,8 @@ public class cdGUI {
 	
 	public ItemStack createItemStack(String dcommand){
 		ItemStack item;
-		if (dcommand.contains("give")){
+		String[] split = dcommand.split(" ");
+		if (split[0].equals("give")){
 			String[] bi = dcommand.split(" ");
 			int amount = Integer.parseInt(bi[3]);
 			String samount = amount + "";

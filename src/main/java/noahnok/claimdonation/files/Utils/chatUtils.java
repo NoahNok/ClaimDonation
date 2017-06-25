@@ -25,7 +25,7 @@ public class chatUtils {
 			count += 1;
 			}
 		}
-		Bukkit.getServer().getLogger().info("[ClaimDonation] Loaded Messages... COMPLETE - ["+count+"/22]");
+		Bukkit.getServer().getLogger().info("[ClaimDonation] Loaded Messages... COMPLETE - ["+count+"/25]");
 	}
 	public String getMessage(String msg){
 		if (messages.containsKey(msg)){

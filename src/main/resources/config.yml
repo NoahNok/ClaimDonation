@@ -12,10 +12,16 @@
 # %command%: SUBCMD_INCORRECT, PLAYER_COMMAND_LIST, COMMAND_REMOVED
 # %cmdnumber%: CAN ONLY BE USED IN: PLAYER_COMMAND_LIST
 #
-# UPDATE: 1.2.0 - REMOVE COMMAND ADDED, MESSAGES HAVE BEEN OPTIMISED TO BE LOADED AT THE START AND ON RELOADS AND NOT ACCESSED FROM THE FILE EVERY TIME!
-# NEW MESSAGES, NEW PLACEHOLDER! %cmdnumber% 
-
-
+# COLORS SECTION:
+# Specifiying colors here will change the colors for the GUI Name. 1, 2, 3 & 4 associated themselves with each parth of the sentence!
+# 1 = "Donation", 2 = "Claim" , etc
+# Setting these using ESSENTIALS Color codes (& symbol)  will change the color of each word of the inventory menu ingame!
+#
+# Player data is now saved in data.yml, it is recommended that you do not change anything in there as you could break someones donations! Only change things if you know what your doing!
+#
+# Please do not edit the value of firstRun! It is there to ensure messages are loaded the first time the plugin is ran!
+# ---
+# ---
 prefix: "&7&l[&b&lClaimDONATION&7&l] "
 messages:
   BASE_COMMAND: "&cPlease use: /claimdonation <claim/add/remove/list/reload>"
@@ -40,10 +46,24 @@ messages:
   NUMBERS_ONLY: "&cYou can only use numbers! Only numbers are accepted!"
   COMMAND_REMOVED: "&bRemoved command: &6%command% &bfrom &6%player%&d!"
   INV_DISBALED: "&cThe Inventory/GUI has been disabled! You cannot use it!" 
+  SAVE_COMMAND: "&2Donations have been saved to: data.yml"
+  ADDALL_COMMAND: "&cPlease use: /claimdonation addall <command>!"
+  ADDALL_CONFIRMATION: "&bYou have been given a donation/item by &6%player%&b, enjoy!"
 
 toggles:
   INV_CLAIM: TRUE
   INV_REMOVE: TRUE
   INVENTORY: TRUE
+  LOGGER_SAVE_MSG: TRUE
+  ADDALL_MESSAGE: FALSE
+  
+colors:
+  1: "&b&l"
+  2: "&b&l"
+  3: "&f&l"
+  4: "&6&l"
 
-players:
+autoSaveTimeInSeconds: 300
+
+
+firstRun: TRUE

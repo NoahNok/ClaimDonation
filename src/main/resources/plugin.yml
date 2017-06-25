@@ -1,6 +1,6 @@
 name: ClaimDonation
 main: noahnok.claimdonation.files.main
-version: 1.3.0
+version: 1.3.5
 author: NoahNok
 commands:
    claimdonation:

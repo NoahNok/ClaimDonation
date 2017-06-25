@@ -16,16 +16,14 @@ public class cdQuickClaim implements CommandExecutor {
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (sender instanceof Player){
-			Player p = (Player) sender;
-			if (sender.hasPermission("cd.claim")){
-				if (plugin.Cdu.getDonations(p) == null){
-					p.sendMessage(plugin.CU.getMessage("PLAYER_NOITEM"));
-						return true;
-				}
-				plugin.Cdu.giveDonation(p, plugin.Cdu.getDonations(p));
-				plugin.CU.getMessage("DONATION_CLAIM");
+			Player p = (Player )sender;
+			if (plugin.toggles.get("INVENTORY") == true){
+				p.performCommand("cd inv");
 				return true;
-			}else{sender.sendMessage(plugin.CU.getMessage("NO_PERM")); return true;}
+			}else {
+				p.performCommand("cd claim " + p.getName());
+				return true;
+			}
 		}else{sender.sendMessage("This command can only be run by a player!"); return true;}
 		
 	}

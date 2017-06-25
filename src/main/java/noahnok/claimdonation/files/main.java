@@ -1,6 +1,8 @@
 package noahnok.claimdonation.files;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -9,8 +11,14 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+
+
 
 import noahnok.claimdonation.files.Commands.cdCommands;
 import noahnok.claimdonation.files.Commands.cdQuickAdd;
@@ -24,6 +32,8 @@ public class main extends JavaPlugin{
 	public String sneakyprefix = ChatColor.translateAlternateColorCodes('&', getConfig().getString("prefix"));
 	public HashMap<String, Boolean> toggles = new HashMap<String, Boolean>();
 	public boolean update = false;
+	boolean loggerMsg = true;
+	int time;
 	public String getVersion(){
 		try {
             HttpURLConnection con = (HttpURLConnection) new URL(
@@ -46,6 +56,7 @@ public class main extends JavaPlugin{
 		
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void onEnable(){
 	
 	    if (!getVersion().equals(this.getDescription().getVersion())){
@@ -54,23 +65,41 @@ public class main extends JavaPlugin{
 	    }
 	    
 	    
-	    
+	    createFiles();
 	    
 		saveDefaultConfig();
 		
 		this.getCommand("claimdonation").setExecutor(new cdCommands(this));
 		this.getCommand("claim").setExecutor(new cdQuickClaim(this));
 		this.getCommand("add").setExecutor(new cdQuickAdd(this));
-		
+
+		time = getConfig().getInt("autoSaveTimeInSeconds");
+
 		getServer().getPluginManager().registerEvents(new cdGUIEvents(this), this);
 		getServer().getPluginManager().registerEvents(new onJoin(this), this);
 
-        		
+		if (getConfig().getBoolean("firstRun") == true) {
+            reloadConfig();
+            getConfig().set("firstRun", false);
+            saveConfig();
+        }
         Cdu.loadDonation();
         CU.loadMessages();
         loadToggles();
-        getCheckDownloadURL();
+        Cdu.loadColors();
 
+
+    	Bukkit.getServer().getScheduler().scheduleAsyncRepeatingTask(this, new Runnable() {
+            public void run() {
+              Cdu.saveDonation();
+              if (loggerMsg == true) {
+				  getLogger().info("Saved Donations to file!");
+			  }
+             
+            }
+        }, 0L, 20L * time);
+        
+        
 		
 		
 	}
@@ -81,9 +110,12 @@ public class main extends JavaPlugin{
 	public cdCommands Cdc = new cdCommands(this);
 	public chatUtils CU = new chatUtils(this);
 	public cdGUI CGUI = new cdGUI(this);
+	public cdGUIEvents CGUIe = new cdGUIEvents(this);
+	
 	private String versionLink;
 	
 	public void loadToggles(){
+        time = getConfig().getInt("autoSaveTimeInSeconds");
 		for (String key : getConfig().getConfigurationSection("toggles").getKeys(false)){
 			if (getConfig().getBoolean(key) == false || getConfig().getBoolean(key) == true){
 				toggles.put(key, getConfig().getBoolean("toggles." + key));
@@ -91,51 +123,97 @@ public class main extends JavaPlugin{
 				toggles.put(key, false);
 			}
 		}
-		System.out.println(toggles.toString());
+		loggerMsg = getConfig().getBoolean("toggles.LOGGER_SAVE_MSG");
+
 	}
 	public boolean isToggleEnabled(String toggle){
 		return toggles.get(toggle);
 	}
 	
-	private Boolean getCheckDownloadURL() {
+    private File dataf, itemsf;
+    private FileConfiguration data, items;
+
+
+
+    public FileConfiguration getItemsConfig() {
+        return this.items;
+    }    
+    public FileConfiguration getDataConfig() {
+        return this.data;
+    }
+    public void reloadItemsConfig() {
         try {
-            URL url = new URL("https://www.spigotmc.org/resources/claimdonation.36531/");
-            URLConnection conn = url.openConnection();
-            conn.setRequestProperty("User-Agent", "Mozilla/1.0");
-            conn.setConnectTimeout(5000);
-            conn.connect();
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String inputLine;
-            Boolean getLinkNow = false;
-            while ((inputLine = in.readLine()) != null) {
-                if (getLinkNow) {
-                    String re1 = ".*?"; // Non-greedy match on filler
-                    String re2 = "(\".*?\")"; // Double Quote String 1
+            try {
+				items.load(itemsf);
+			} catch (InvalidConfigurationException e) {
+				e.printStackTrace();
+			}
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+    }    
+    public void reloadDataConfig() {
+        try {
+            try {
+				data.load(dataf);
+			} catch (InvalidConfigurationException e) {
+				e.printStackTrace();
+			}
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+    }  
+    public void saveItemsConfig(){
+    	try {
+			items.save(itemsf);
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}
+    }    
+    public void saveDataConfig(){
+    	try {
+			data.save(dataf);
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}
+    }
 
-                    Pattern p = Pattern.compile(re1 + re2, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-                    Matcher m = p.matcher(inputLine);
-                    if (m.find()) {
-                        String downloadUrl = "http://www.spigotmc.org/" + m.group(1).toString().replace("\"", "");
-                        this.versionLink = downloadUrl;
-                    }
+    private void createFiles() {
 
-                    getLinkNow = false;
-                }
+        dataf = new File(getDataFolder(), "data.yml");
+        itemsf = new File(getDataFolder(), "items.yml");
 
-                if (inputLine.contains("<label class=\"downloadButton \">")) {
-                    getLinkNow = true;
-                }
-            }
-            in.close();
-            return true;
-        } catch (Exception e) {
-            getServer().getLogger().warning("Something went wrong while downloading an update.");
-            getServer().getLogger().info("Please check the plugin's page to see if there are any updates available.");
-            getServer().getLogger().fine(e.getMessage());
-            
-            return false;
+        if (!dataf.exists()) {
+            dataf.getParentFile().mkdirs();
+            saveResource("data.yml", false);
+        }
+        if (!itemsf.exists()) {
+            itemsf.getParentFile().mkdirs();
+            saveResource("items.yml", false);
+         }
+
+        data = new YamlConfiguration();
+        items = new YamlConfiguration();
+        try {
+            try {
+				data.load(dataf);
+			} catch (InvalidConfigurationException e) {
+				e.printStackTrace();
+			}
+            try {
+				items.load(itemsf);
+			} catch (InvalidConfigurationException e) {
+				e.printStackTrace();
+			}
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
+
+	
+
 	
 }
 

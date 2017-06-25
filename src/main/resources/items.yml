@@ -1,0 +1,9 @@
+GUIItems:
+  GreenGlass:
+    Material: "STAINED_GLASS_PANE"
+    ColorID: 5
+    Name: "&2&lCLAIMED"
+  RedGlass:
+    Material: "STAINED_GLASS_PANE"
+    ColorID: 14
+    Name: "&c&lREMOVED"

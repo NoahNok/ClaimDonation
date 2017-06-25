@@ -1,0 +1,6 @@
+# Data Will be stored here when the Plugin is either disabled, reloading or not on. 
+# Here data about players and there donations are stored!
+# Only modify if you know what your doing, otherwise you may cause the plugin to error and break!
+# If the plugin does break due to you chaning something either: A. Delete the data.yml B. Delete that whole players section C. Undo the change with Ctrl+Z if you still have a text editor open!
+
+players:

@@ -13,7 +13,6 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -23,6 +22,8 @@ public class cdGUIEvents implements Listener {
 	public cdGUIEvents(main plugin) {
 		this.plugin = plugin; 
 	}
+	
+
 
 	private final boolean isDonationInv(Inventory inv){
 		String wholeName = inv.getName();
@@ -41,7 +42,6 @@ public class cdGUIEvents implements Listener {
 	@EventHandler
 	public void cancleInvClick(InventoryClickEvent e){
 		if (isDonationInv(e.getInventory())){
-			System.out.println("CD DEBUG 1");
 			e.setCancelled(true);
 		}
 		
@@ -57,7 +57,6 @@ public class cdGUIEvents implements Listener {
 	
 		if (plugin.isToggleEnabled("INV_REMOVE") == true){
 		if (isDonationInv(e.getInventory())){
-			System.out.println("CD DEBUG 2");
 		//returns true for top inv.
 		if (hasClickedTop(e) == true){
 		String[] splt = e.getInventory().getName().split(" ");
@@ -81,16 +80,22 @@ public class cdGUIEvents implements Listener {
 					
 		
 						int slot = e.getSlot();
+						int glassslot = e.getSlot();
 						ArrayList<String> commands;
 						if (online == true){
 							commands = plugin.Cdu.getDonations(target);
 						}else{
 							commands = plugin.Cdu.getOfflineDonations(op);
 						}
+						if (slot >= commands.size()){
+						    slot = 0;
+                        }
 						commands.remove(slot);
-						ItemStack rglass = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short)14); ItemMeta rmeta = rglass.getItemMeta(); rmeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&c&lREMOVED")); rglass.setItemMeta(rmeta);
-						e.getInventory().setItem(slot, rglass);
+						
+						e.getInventory().setItem(glassslot, plugin.Cdu.retrieveCfgStack("RedGlass"));
 						p.updateInventory();
+
+
 					}
 				}
 			}
@@ -103,12 +108,10 @@ public class cdGUIEvents implements Listener {
 	}
 	
 	private boolean isGlass(ItemStack item){
-		ItemStack gglass = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short)5); ItemMeta meta = gglass.getItemMeta(); meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&2&lCLAIMED")); gglass.setItemMeta(meta);
-		ItemStack rglass = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short)14); ItemMeta rmeta = rglass.getItemMeta(); rmeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&c&lREMOVED")); rglass.setItemMeta(rmeta);
 		if (item == null){
 			return true;
 		}
-		if (item.isSimilar(gglass) || item.isSimilar(rglass)){
+		if (item.isSimilar(plugin.Cdu.retrieveCfgStack("RedGlass")) || item.isSimilar(plugin.Cdu.retrieveCfgStack("GreenGlass"))){
 			return true;
 		}else{
 			return false;
@@ -120,7 +123,6 @@ public class cdGUIEvents implements Listener {
 		if (plugin.isToggleEnabled("INV_CLAIM") == true){
 
 		if (isDonationInv(e.getInventory())){
-			System.out.println("CD DEBUG 3");
 			if (hasClickedTop(e) == true){
 			Player p = (Player) e.getWhoClicked();
 			String[] splt = e.getInventory().getName().split(" ");
@@ -132,12 +134,15 @@ public class cdGUIEvents implements Listener {
 						if (isGlass(e.getCurrentItem()) == false){
 							if (!(e.getCurrentItem().getType().equals(Material.AIR))){
 								int slot = e.getSlot();
+								int glassslot = e.getSlot();
 								ArrayList<String> commands = plugin.Cdu.getDonations(target);
+								if (slot >= commands.size()){
+									slot = 0;
+								}
 								String command = commands.get(slot);
 								Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
 								commands.remove(slot);
-								ItemStack gglass = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short)5); ItemMeta meta = gglass.getItemMeta(); meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&2&lCLAIMED")); gglass.setItemMeta(meta);
-								e.getInventory().setItem(slot, gglass);
+								e.getInventory().setItem(glassslot, plugin.Cdu.retrieveCfgStack("GreenGlass"));
 								p.updateInventory();
 							}else{e.setCancelled(true);}
 						}
